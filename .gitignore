@@ -1,0 +1,15 @@
+# Archivos temporales de Windows
+Thumbs.db
+Desktop.ini
+Comandos.txt
+
+# Carpetas de entorno virtual (Python/Node)
+venv/
+node_modules/
+
+# Variables de entorno (¡NUNCA subas secretos!)
+.env
+.env.local
+
+# Logs
+*.log
