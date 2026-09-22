@@ -1,0 +1,30 @@
+services:
+  # Servicio 1: La Base de Datos
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword123
+      MYSQL_DATABASE: wordpress_db
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: wp_password123
+    volumes:
+      - db_data:/var/lib/mysql  # Persistencia: los datos viven aquí aunque el contenedor muera
+
+  # Servicio 2: La Aplicación Web
+  wordpress:
+    image: wordpress:latest
+    restart: always
+    ports:
+      - "8085:80"  # Mapeamos el puerto 8085 de tu PC al puerto 80 del contenedor
+    environment:
+      WORDPRESS_DB_HOST: db:3306  # ¡Magia! Se conecta al servicio 'db' por la red interna de Docker
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: wp_password123
+      WORDPRESS_DB_NAME: wordpress_db
+    depends_on:
+      - db  # Le dice a Docker que espere a que 'db' esté listo antes de iniciar wordpress
+
+# Definición de volúmenes persistentes (Docker los gestiona por ti)
+volumes:
+  db_data:

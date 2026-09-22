@@ -1,0 +1,41 @@
+name: Build and Push Docker Image
+			# 1. DISPARADOR: Se ejecuta cada vez que hay un push a la rama 'main'
+			on:
+			push:
+				branches:
+				- main
+			
+			# 2. TRABAJO: Definimos un job llamado 'build-and-push'
+			jobs:
+			build-and-push:
+				# Ejecutar en la última versión de Ubuntu de GitHub
+				runs-on: ubuntu-latest
+			
+				steps:
+				# Paso A: Descargar el código de tu repositorio al Runner
+				- name: Checkout code
+					uses: actions/checkout@v4
+			
+				# Paso B: Iniciar sesión en GitHub Container Registry (GHCR)
+				- name: Log in to GHCR
+					uses: docker/login-action@v3
+					with:
+					registry: ghcr.io
+					username: ${{ github.actor }} # Tu usuario de GitHub (h4r7ur03rr0r-coder)
+					password: ${{ secrets.GITHUB_TOKEN }} # El token mágico y seguro de GitHub
+			
+				# Paso C: Configurar Docker Buildx (herramienta moderna y rápida de Docker)
+				- name: Set up Docker Buildx
+					uses: docker/setup-buildx-action@v3
+			
+				# Paso D: Construir y subir (push) la imagen
+				- name: Build and push Docker image
+					uses: docker/build-push-action@v5
+					with:
+					context: . # El directorio actual (donde está el Dockerfile)
+					push: true # ¡Sí, queremos subirlo al registry!
+					tags: |
+						ghcr.io/${{ github.repository }}/mi-api-python:${{ github.sha }}
+						ghcr.io/${{ github.repository }}/mi-api-python:latest
+					cache-from: type=gha # Usa la caché de GitHub Actions para acelerar builds futuros
+					cache-to: type=gha,mode=max
